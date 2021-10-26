@@ -1,0 +1,26 @@
+cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+        - build
+
+stages:
+    - build
+    - test
+
+
+build-java11:
+    image: openjdk:11.0.11
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+    stage: build
+    script:
+        - ./gradlew clean assemble build
+
+test-java11:
+    image: openjdk:11.0.11
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+    stage: test
+    script:
+        - ./gradlew test
+
