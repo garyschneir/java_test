@@ -139,4 +139,23 @@ class FFS_KeyId {
       ffs_name = name;
       key_number = number; // May be NULL - indicating an encrypt
     }
+    @Override
+    public int hashCode() {
+      int result = 17;
+      result = 31 * result + ((ffs_name != null) ? ffs_name.hashCode() : 0);
+      result = 31 * result + ((key_number != null) ? key_number.hashCode() : 0);
+      return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null) return false;
+    if (getClass() != obj.getClass()) return false;
+    final FFS_KeyId other = (FFS_KeyId) obj;
+    if (this.ffs_name != other.ffs_name) {
+        return false;
+    } else return (this.key_number == other.key_number);
+  }
+
 }
