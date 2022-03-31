@@ -378,10 +378,9 @@ public class UbiqFPEEncryptDecrypt implements AutoCloseable {
                 FFS_KeyRecord FFSKeycaching = ffsKeyCache.FFSKeyCache.get(keyId);
 
                 // decrypt the datakey from the keys found in the cache
-                String EncryptedPrivateKey = FFSKeycaching.getEncryptedPrivateKey();
-                String WrappedDataKey = FFSKeycaching.getWrappedDataKey();
-                byte[] key = this.ubiqWebServices.getUnwrappedKey(EncryptedPrivateKey, WrappedDataKey);
-
+                // String EncryptedPrivateKey = FFSKeycaching.getEncryptedPrivateKey();
+                // String WrappedDataKey = FFSKeycaching.getWrappedDataKey();
+                // byte[] key = FFSKeycaching.getDataKey(); //this.ubiqWebServices.getUnwrappedKey(EncryptedPrivateKey, WrappedDataKey);
 
                 ubiq_platform_fpe_string_parse(FFScaching, 1, PlainText);
 
@@ -423,13 +422,13 @@ public class UbiqFPEEncryptDecrypt implements AutoCloseable {
                 String encryption_algorithm = FFScaching.getAlgorithm();
                 switch(encryption_algorithm) {
                     case "FF1":
-                        if (verbose) System.out.println("    twkmin= " + twkmin + "    twkmax= " + twkmax +   "    tweak.length= " + tweak.length +   "    key.length= " + key.length);
-                        FF1 ctxFF1 = new FF1(key, tweak, twkmin, twkmax, inputradix);
+                        if (verbose) System.out.println("    twkmin= " + twkmin + "    twkmax= " + twkmax +   "    tweak.length= " + tweak.length +   "    key.length= " +  FFSKeycaching.getDataKey().length);
+                        FF1 ctxFF1 = new FF1( FFSKeycaching.getDataKey(), tweak, twkmin, twkmax, inputradix);
                         cipher = ctxFF1.encrypt(convertedToRadix);
                         if (verbose) System.out.println("    cipher= " + cipher);
                     break;
                     case "FF3_1":
-                        FF3_1 ctxFF3_1 = new FF3_1(key, tweak, inputradix);
+                        FF3_1 ctxFF3_1 = new FF3_1( FFSKeycaching.getDataKey(), tweak, inputradix);
                         cipher = ctxFF3_1.encrypt(convertedToRadix);
                         if (verbose) System.out.println("     cipher= " + cipher);
 
@@ -532,9 +531,9 @@ public class UbiqFPEEncryptDecrypt implements AutoCloseable {
                 FFS_KeyRecord FFSKeycaching = ffsKeyCache.FFSKeyCache.get(keyId);
 
                 // decrypt the datakey from the keys found in the cache
-                String EncryptedPrivateKey = FFSKeycaching.getEncryptedPrivateKey();
-                String WrappedDataKey = FFSKeycaching.getWrappedDataKey();
-                byte[] key = this.ubiqWebServices.getUnwrappedKey(EncryptedPrivateKey, WrappedDataKey);
+                // String EncryptedPrivateKey = FFSKeycaching.getEncryptedPrivateKey();
+                // String WrappedDataKey = FFSKeycaching.getWrappedDataKey();
+                //byte[] key =  FFSKeycaching.getDataKey(); //this.ubiqWebServices.getUnwrappedKey(EncryptedPrivateKey, WrappedDataKey);
 
                 restoredFromRadix = str_convert_radix(this.trimmed, FFScaching.getOutput_character_set(), base2_charset);
                 if (verbose) System.out.println("    converted to base2= " + restoredFromRadix);
@@ -568,13 +567,13 @@ public class UbiqFPEEncryptDecrypt implements AutoCloseable {
                 String encryption_algorithm = FFScaching.getAlgorithm();
                 switch(encryption_algorithm) {
                     case "FF1":
-                        if (verbose) System.out.println("    twkmin= " + twkmin + "    twkmax= " + twkmax +   "    tweak.length= " + tweak.length +   "    key.length= " + key.length );
-                        FF1 ctxFF1 = new FF1(key, tweak, twkmin, twkmax, inputradix);
+                        if (verbose) System.out.println("    twkmin= " + twkmin + "    twkmax= " + twkmax +   "    tweak.length= " + tweak.length +   "    key.length= " +  FFSKeycaching.getDataKey().length );
+                        FF1 ctxFF1 = new FF1( FFSKeycaching.getDataKey(), tweak, twkmin, twkmax, inputradix);
                         PlainText = ctxFF1.decrypt(restoredFromRadix);
                         if (verbose) System.out.println("    PlainText (pt base2)= " + PlainText);
                     break;
                     case "FF3_1":
-                        FF3_1 ctxFF3_1 = new FF3_1(key, tweak, inputradix);
+                        FF3_1 ctxFF3_1 = new FF3_1( FFSKeycaching.getDataKey(), tweak, inputradix);
                         PlainText = ctxFF3_1.decrypt(restoredFromRadix);
                         if (verbose) System.out.println("    PlainText= " + PlainText);
                     break;

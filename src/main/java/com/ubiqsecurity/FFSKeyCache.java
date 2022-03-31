@@ -81,9 +81,9 @@ class FFSKeyCache  {
             ffsKeyRecordResponse= ubiqWebServices.getFPEEncryptionKey(keyId.ffs_name);
         }
 
-
         String jsonStr= "{}";
         Gson gson = new Gson();
+
         FFS_KeyRecord ffsKey = gson.fromJson(jsonStr, FFS_KeyRecord.class);
 
         if ((ffsKeyRecordResponse.EncryptedPrivateKey == null) || (ffsKeyRecordResponse.WrappedDataKey == null)) {
@@ -92,6 +92,9 @@ class FFSKeyCache  {
             ffsKey.setEncryptedPrivateKey(ffsKeyRecordResponse.EncryptedPrivateKey);
             ffsKey.setWrappedDataKey(ffsKeyRecordResponse.WrappedDataKey);
             ffsKey.setKeyNumber(ffsKeyRecordResponse.KeyNumber);
+
+            ffsKey.setDataKey(ubiqWebServices.getUnwrappedKey(ffsKeyRecordResponse.EncryptedPrivateKey, ffsKeyRecordResponse.WrappedDataKey));
+
         }
         return ffsKey;
     }
@@ -107,6 +110,7 @@ class FFS_KeyRecord {
     String EncryptedPrivateKey;
     String WrappedDataKey;
     int KeyNumber;
+    byte[] data_key;
 
 
 	public String getEncryptedPrivateKey() {
@@ -129,6 +133,15 @@ class FFS_KeyRecord {
 	public void setKeyNumber(int KeyNumber) {
 		this.KeyNumber = KeyNumber;
 	}
+
+  public byte[] getDataKey() {
+		return data_key;
+	}
+  public void setDataKey(byte[] key) {
+		this.data_key = key;
+	}
+
+
 }
 
 class FFS_KeyId {

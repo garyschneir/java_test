@@ -48,6 +48,7 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.jcajce.provider.asymmetric.rsa.BCRSAPrivateKey;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.Security;
 import java.util.Base64;
 import java.io.IOException;
@@ -410,18 +411,19 @@ class UbiqWebServices {
             throws IOException, OperatorCreationException, PKCSException, InvalidCipherTextException {
 
         byte[] unwrappedDataKey = null;
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+        if (Security.getProvider(org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
 
         try (PEMParser pemParser = new PEMParser(new StringReader(encryptedPrivateKey))) {
 
             Object object = pemParser.readObject();
-            if (!(object instanceof PKCS8EncryptedPrivateKeyInfo)) {
+  //          if (!(object instanceof PKCS8EncryptedPrivateKeyInfo)) {
+            if (!(object.getClass().getSimpleName().equals(PKCS8EncryptedPrivateKeyInfo.class.getSimpleName()))) {
                 throw new RuntimeException("Unrecognized Encrypted Private Key format");
             }
 
-            JceOpenSSLPKCS8DecryptorProviderBuilder builder = new JceOpenSSLPKCS8DecryptorProviderBuilder().setProvider("BC");
+            JceOpenSSLPKCS8DecryptorProviderBuilder builder = new JceOpenSSLPKCS8DecryptorProviderBuilder().setProvider(org.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME);
 
             // Decrypt the private key using our secret key
             InputDecryptorProvider decryptProvider  = builder.build(secretCryptoAccessKey.toCharArray());
@@ -429,13 +431,15 @@ class UbiqWebServices {
             PKCS8EncryptedPrivateKeyInfo keyInfo = (PKCS8EncryptedPrivateKeyInfo) object;
             PrivateKeyInfo privateKeyInfo = keyInfo.decryptPrivateKeyInfo(decryptProvider);
 
-            JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter().setProvider("BC");
+            JcaPEMKeyConverter keyConverter = new JcaPEMKeyConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME);
             PrivateKey privateKey = keyConverter.getPrivateKey(privateKeyInfo);
 
-            if (!(privateKey instanceof BCRSAPrivateCrtKey)) {
+//            if (!(privateKey instanceof BCRSAPrivateCrtKey)) {
+            if (!(privateKey.getClass().getSimpleName().equals(BCRSAPrivateCrtKey.class.getSimpleName()))) {
                 throw new RuntimeException("Unrecognized Private Key format");
             }
-            BCRSAPrivateKey rsaPrivateKey = (BCRSAPrivateKey)privateKey;
+//            BCRSAPrivateKey rsaPrivateKey = (BCRSAPrivateKey)privateKey;
+            RSAPrivateCrtKey rsaPrivateKey = (RSAPrivateCrtKey)privateKey;
 
             // now that we've decrypted the server-provided empheral key, we can
             // decrypt the key to be used for local encryption
