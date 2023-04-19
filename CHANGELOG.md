@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.0 - 2023-04-19
+* Updated usage configuration defaults.  Updated bouncycastle version
+
 ## 0.2.11 - 2023-03-22
 * Added support for measuring metrics and performance
 
